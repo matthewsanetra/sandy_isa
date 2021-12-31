@@ -1,0 +1,125 @@
+use crate::parser::{Arg, Op, Label, Instruction};
+
+grammar;
+
+ThreeArgOp: Op = {
+    "add" => Op::Add,
+    "sub" => Op::Sub,
+    "mul" => Op::Mul,
+    "div" => Op::Div,
+    "mod" => Op::Mod,
+    "and" => Op::And,
+    "or" => Op::Or,
+    "xor" => Op::Xor,
+    "gt" => Op::Gt,
+    "gte" => Op::Gte,
+    "lt" => Op::Lt,
+    "lte" => Op::Lte,
+    "eq" => Op::Eq,
+    "neq" => Op::Neq,
+}
+
+TwoArgOp: Op = {
+    "neg" => Op::Neg,
+    "not" => Op::Not,
+    "load" => Op::Load,
+    "jlz" => Op::Jlz,
+    "jgz" => Op::Jgz,
+    "jez" => Op::Jez,
+    "jnz" => Op::Jnz,
+}
+
+OneArgOp: Op = {
+    "call" => Op::Call,
+    "jump" => Op::Jump,
+    "push" => Op::Push,
+    "pop" => Op::Pop,
+    "halt" => Op::Halt,
+}
+
+NoArgOp: Op = {
+    "ret" => Op::Ret,
+}
+
+Argument: Arg = {
+    Val,
+    Reg,
+    Addr,
+}
+
+Addr: Arg = {
+    <l: @L> "." <i:ident> <r: @R> => Arg::Addr((l, r), Label(i)),
+}
+
+Val: Arg = {
+    <l:@L> "#"? <n:num> <r:@R> => Arg::Val((l, r), n),
+}
+
+Reg: Arg = {
+    <l:@L> "%" <n:num> <r:@R> => Arg::Reg((l, r), n),
+}
+
+ThreeArgInsn: Instruction = {
+    <l:@L> <o:ThreeArgOp> <r:@R> <a:Argument> ","? <b:Argument> ","? <c:Argument> ","? => Instruction::ThreeArg((l, r), o, a, b, c),
+}
+
+TwoArgInsn: Instruction = {
+    <l: @L> <o:TwoArgOp> <r:@R> <a:Argument> ","? <b:Argument> ","? => Instruction::TwoArg((l, r), o, a, b),
+}
+
+OneArgInsn: Instruction = {
+    <l: @L> <o:OneArgOp> <r:@R> <a:Argument> ","? => Instruction::OneArg((l, r), o, a),
+}
+
+Insn: Instruction = {
+    <l:@L> "." <i:ident> ":" <r:@R> => Instruction::Label((l, r), Label(i)),
+    ThreeArgInsn,
+    TwoArgInsn,
+    OneArgInsn,
+    <l:@L> <o:NoArgOp> <r:@R> => Instruction::NoArg((l, r), o),
+}
+
+pub(crate) Program = Insn*;
+
+
+extern {
+    type Location = usize;
+    type Error = crate::lexer::LexError;
+
+    enum crate::lexer::Token {
+        ident => crate::lexer::Token::Identifier(<String>),
+        num => crate::lexer::Token::Number(<i64>),
+        "." => crate::lexer::Token::Dot,
+        "," => crate::lexer::Token::Comma,
+        ":" => crate::lexer::Token::Colon,
+        "%" => crate::lexer::Token::Percentage,
+        "#" => crate::lexer::Token::Hashtag,
+        "add" => crate::lexer::Token::Add,
+        "sub" => crate::lexer::Token::Sub,
+        "mul" => crate::lexer::Token::Mul,
+        "div" => crate::lexer::Token::Div,
+        "mod" => crate::lexer::Token::Mod,
+        "neg" => crate::lexer::Token::Neg,
+        "and" => crate::lexer::Token::And,
+        "or" => crate::lexer::Token::Or,
+        "not" => crate::lexer::Token::Not,
+        "xor" => crate::lexer::Token::Xor,
+        "load" => crate::lexer::Token::Load,
+        "call" => crate::lexer::Token::Call,
+        "jump" => crate::lexer::Token::Jump,
+        "jez" => crate::lexer::Token::Jez,
+        "jnz" => crate::lexer::Token::Jnz,
+        "jgz" => crate::lexer::Token::Jgz,
+        "jlz" => crate::lexer::Token::Jlz,
+        "ret" => crate::lexer::Token::Ret,
+        "gt" => crate::lexer::Token::Gt,
+        "gte" => crate::lexer::Token::Gte,
+        "lt" => crate::lexer::Token::Lt,
+        "lte" => crate::lexer::Token::Lte,
+        "eq" => crate::lexer::Token::Eq,
+        "neq" => crate::lexer::Token::Neq,
+        "push" => crate::lexer::Token::Push,
+        "pop" => crate::lexer::Token::Pop,
+        "halt" => crate::lexer::Token::Halt,
+    }
+}

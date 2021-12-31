@@ -1,0 +1,30 @@
+    xor %0, %0, %0
+    xor %1, %1, %1
+    load 1, %10
+    push 20
+    call .fib
+    pop %0
+    halt %0
+.fib:
+    pop %0
+    sub %0, %10, %0
+    jez %0, .fib_ret1
+    load %0, %1
+    sub %1, %10, %1
+    jez %1, .fib_ret1
+    push %0
+    push %1
+    call .fib
+    pop %1
+    pop %0
+    push %1
+    push %0
+    call .fib
+    pop %0
+    pop %1
+    add %0, %1, %0
+    push %0
+    ret
+.fib_ret1:
+    push 1
+    ret

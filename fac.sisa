@@ -1,0 +1,23 @@
+    xor %0, %0, %0
+    xor %1, %1, %1
+    xor %10, %10, %10
+    load 1, %10
+    push 5
+    call .fac
+    pop %0
+    halt %0
+.fac:
+    pop %0
+    jez %0, .fac0
+    load %0, %1
+.fac_loop:
+    sub %1, %10, %1
+    jez %1, .fac_end
+    mul %0, %1, %0
+    jump .fac_loop
+.fac_end:
+    push %0
+    ret
+.fac0:
+    push 1
+    ret

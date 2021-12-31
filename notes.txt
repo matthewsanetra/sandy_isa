@@ -1,0 +1,42 @@
+# Notes
+
+No immediate values for now lol
+
+add a,b,c => a + b -> c
+sub a,b,c => a - b -> c
+mul a,b,c => a * b -> c
+div a,b,c => a / b -> c
+mod a,b,c => a % b -> c
+neg a,c => -a -> c
+and a,b,c => a & b -> c
+or  a,b,c => a | b -> c
+not a,c => !a -> c
+xor a,b,c => a ^ b -> c
+load (val|reg),reg => val -> reg
+call addr => push program counter onto return stack, jump to addr
+jump addr => jump to addr
+jlz reg,addr => if reg < 0, jump to addr
+jgz reg,addr => if reg > 0, jump to addr
+jez reg,addr => if reg == 0, jump to addr
+jnz reg,addr => if reg != 0, jump to addr
+ret => pop addr off return stack and jump to it
+gt a,b,c => a > b -> c
+gte a,b,c => a >= b -> c
+lt a,b,c => a < b -> c
+lte a,b,c => a <= b -> c
+eq a,b,c => a == b -> c
+neq a,b,c => a != b -> c
+push (val|reg) => push reg onto stack
+pop reg => pop off stack into reg
+halt reg => stop execution, outputting value in reg
+
+addr is an identifier prefixed with .
+val is a number optionally prefixed with #
+reg is a number prefixed with %
+
+labels are ' .ident: '
+
+things i decided when coding:
+* Constant table is maximum 2^16 in length which allows 524288 bytes of constants, 64 bit aligned.
+* 2^16 registers, which allows 524288 bytes of in-register memory, each register being 64 bits.
+* addresses are stored in constant table
